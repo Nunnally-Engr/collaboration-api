@@ -15,4 +15,4 @@ deployment:
   production:
     branch: master
     commands:
-      - firebase deploy --token "$FIREBASE_TOKEN"
+      - firebase deploy --only functions --token "$FIREBASE_TOKEN"
