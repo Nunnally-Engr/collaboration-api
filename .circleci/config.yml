@@ -1,0 +1,28 @@
+version: 2
+jobs:
+    build:
+        docker:
+            # specify the version you desire here
+            - image: circleci/node:8
+        
+        steps:
+            - checkout
+            # Download and cache dependencies
+            - restore_cache:
+                keys:
+                    - v1-dependencies-{{ checksum "./functions/package.json" }}
+                    # fallback to using the latest cache if no exact match is found
+                    - v1-dependencies-
+            # Install all needed dependencies from package.json
+            - run:
+                working_directory: ./functions
+                command: npm install
+
+            # Save the cache including node_modules folder
+            - save_cache:
+                paths:
+                  - ./functions/node_modules
+                key: v1-dependencies-{{ checksum "./functions/package.json" }}
+            - run:
+                name: "Deploy to CloudFunctions"
+                command: ./functions/node_modules/.bin/firebase deploy --only functions --project "$FIREBASE_PROJECT" --token "$FIREBASE_TOKEN"
